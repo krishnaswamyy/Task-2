@@ -1,0 +1,40 @@
+# STEP 1: Import required libraries
+import pandas as pd
+import numpy as np
+
+# STEP 2: Load the uploaded dataset
+df = pd.read_csv("/content/train (1).csv")
+
+# STEP 3: Basic dataset overview
+print("First 5 rows:")
+display(df.head())
+
+print("\nDataset shape:", df.shape)
+print("\nDataset info:")
+df.info()
+
+# STEP 4: Check missing values
+print("\nMissing values (columns with missing data):")
+missing = df.isnull().sum()
+display(missing[missing > 0].sort_values(ascending=False))
+
+# STEP 5: Separate numerical and categorical columns
+num_cols = df.select_dtypes(include=["int64", "float64"]).columns
+cat_cols = df.select_dtypes(include=["object"]).columns
+
+# STEP 6: Fill missing values
+# Numerical columns → median
+for col in num_cols:
+    df[col].fillna(df[col].median(), inplace=True)
+
+# Categorical columns → mode
+for col in cat_cols:
+    df[col].fillna(df[col].mode()[0], inplace=True)
+
+# STEP 7: Verify no missing values remain
+print("\nTotal missing values after cleaning:", df.isnull().sum().sum())
+
+# STEP 8: Save cleaned dataset
+df.to_csv("cleaned_house_prices.csv", index=False)
+
+print("\nCleaned dataset saved as 'cleaned_house_prices.csv'")
